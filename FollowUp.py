@@ -1,3 +1,4 @@
+from commons import Commons
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -9,7 +10,7 @@ class FollowUp(QMainWindow):
         super(FollowUp, self).__init__()
         self.setGeometry(150, 150, 500, 300)
         self.setWindowTitle("FollowUp")
-
+        self.commons = Commons()
         self.init_ui()
 
     def init_ui(self):
@@ -26,9 +27,6 @@ class FollowUp(QMainWindow):
         self.delete.setText("Delete")
         self.delete.move(200, 0)
         self.delete.clicked.connect(self.clicked)
-
-    def list_tasks(self):
-        pass
 
     def clicked(self):
         print("Clicked")

@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QCalendarWidget, QLineEdit, QTimeEdit
 from PyQt5.QtCore import QTime, QDate
+from commons import Commons
 
 
 class CalendarWindow(QMainWindow):
@@ -8,6 +9,8 @@ class CalendarWindow(QMainWindow):
         super(CalendarWindow, self).__init__()
         self.setGeometry(300, 300, 400, 400)
         self.setWindowTitle("Calendar")
+        self.reminder_data = {}
+        self.commons = Commons()
         self.init_ui()
 
     def init_ui(self):
@@ -15,7 +18,6 @@ class CalendarWindow(QMainWindow):
         self.init_lineedit()
         self.init_pushbuttons()
         self.init_timedit()
-
         self.show()
 
     def init_calendar(self):
@@ -50,16 +52,21 @@ class CalendarWindow(QMainWindow):
         self.tedit.setTime(self.time.currentTime())
         self.tedit.move(5, 260)
 
-
     def clicked(self):
         print("Clicked")
 
     def show_main(self):
         try:
+            selected_date = self.calendar.selectedDate()
             print(self.calendar.selectedDate())
             selected_time = self.tedit.time()
             print(selected_time.toString())
             print(self.text.text())
+            self.reminder_data['Selected_Date'] = selected_date.toString()
+            self.reminder_data['Selected_Time'] = selected_time.toString()
+            self.reminder_data['Task_Description'] = self.text.text()
+            print("From Calendar: ", self.reminder_data)
+            self.commons.add_task(self.reminder_data)
             self.close()
 
         except Exception as err:
