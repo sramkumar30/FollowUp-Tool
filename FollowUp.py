@@ -1,4 +1,4 @@
-from commons import Commons
+from commons import *
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -11,6 +11,7 @@ class FollowUp(QMainWindow):
         self.setGeometry(150, 150, 500, 300)
         self.setWindowTitle("FollowUp")
         self.commons = Commons()
+        self._table = Task(self)
         self.init_ui()
 
     def init_ui(self):
