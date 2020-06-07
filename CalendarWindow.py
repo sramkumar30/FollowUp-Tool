@@ -1,17 +1,24 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QCalendarWidget, QLineEdit, QTimeEdit
 from PyQt5.QtCore import QTime, QDate
 from commons import Commons
 
 
 class CalendarWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, update=False, id=None, timeval=None, taskval=None):
         super(CalendarWindow, self).__init__()
         self.setGeometry(300, 300, 400, 400)
-        self.setWindowTitle("Calendar")
+        if update:
+            self.setWindowTitle("Edit Task")
+        else:
+            self.setWindowTitle("Add Task")
         self.reminder_data = {}
         self.commons = Commons()
+        self._id = id
+        self._timeval = timeval
+        self._taskval = taskval
         self.init_ui()
+        self.update = update
 
     def init_ui(self):
         self.init_calendar()
@@ -34,12 +41,17 @@ class CalendarWindow(QMainWindow):
         self.text.setMaxLength(250)
         self.text.setGeometry(5,310,40,40)
         self.text.setFixedWidth(350)
-        self.text.setPlaceholderText("Enter Task Description")
+        if not self.update:
+            self._taskval = "Enter Task Description"
+            self.text.setPlaceholderText(self._taskval)
+        else:
+            self.text.setText(self._taskval)
 
     def init_pushbuttons(self):
         self.OK = QtWidgets.QPushButton(self)
         self.OK.setText("OK")
         self.OK.move(195, 360)
+
         self.OK.clicked.connect(self.show_main)
         self.Cancel = QtWidgets.QPushButton(self)
         self.Cancel.setText("Cancel")
@@ -49,11 +61,12 @@ class CalendarWindow(QMainWindow):
     def init_timedit(self):
         self.time = QTime()
         self.tedit = QTimeEdit(self)
-        self.tedit.setTime(self.time.currentTime())
+        if not self.update:
+            self._timeval = self.time.currentTime()
+        else:
+            self._timeval = QtCore.QTime.fromString(self._timeval, 'HH:mm:ss')
+        self.tedit.setTime(self._timeval)
         self.tedit.move(5, 260)
-
-    def clicked(self):
-        print("Clicked")
 
     def show_main(self):
         try:
@@ -66,7 +79,10 @@ class CalendarWindow(QMainWindow):
             self.reminder_data['Selected_Time'] = selected_time.toString()
             self.reminder_data['Task_Description'] = self.text.text()
             print("From Calendar: ", self.reminder_data)
-            self.commons.add_task(self.reminder_data)
+            if self.update:
+                self.commons.prepare_json(self.reminder_data, self._id)
+            else:
+                self.commons.prepare_json(self.reminder_data)
             self.close()
 
         except Exception as err:
